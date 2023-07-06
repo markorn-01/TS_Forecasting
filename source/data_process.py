@@ -1,13 +1,19 @@
 import numpy as np
 import pandas as pd
 
-def get_data(csv_path, label=None):
+def get_data(csv_path):
     #this path is used for testing only. Otherwise, use the path in the main function.
     csv_path = "data/gold/LBMA-GOLD.csv"
     df = pd.read_csv(csv_path) 
-    date_time = pd.to_datetime(df.pop('Date'))
+    return df
+
+def prepare_data(df, label=None, features=None, date=None):
+    #set labels and features
+    date_time = pd.to_datetime(df.pop(date), format='%Y-%m-%d')
     df[df.isna()] = 0.00
-    return df[[label]] , date_time    
+    if features == None:
+        return df[[label]] , date_time
+    return df[[label, features]] , date_time
 
 def add_time(df, date_time):
     #add time features

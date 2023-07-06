@@ -11,11 +11,14 @@ from data_process import *
 from WindowGenerator import *
 from ModelGenerator import *
 
-df, datetime = get_data("data/gold/LBMA-GOLD.csv", 'USD (AM)')
+df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
+df, datetime = prepare_data(df, label='USD (AM)', date='Date') 
 df = add_time(df, datetime)
+
 train_df, val_df, test_df, num_features = split_data(df)
-train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
-w2 = WindowGenerator(input_width=6, 
+# train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
+
+wg_single_predictor = WindowGenerator(input_width=1, 
                      label_width=1, 
                      shift=1,
                      train_df=train_df,
@@ -23,16 +26,29 @@ w2 = WindowGenerator(input_width=6,
                      test_df=test_df,
                      label_columns=['USD (AM)'])
 
-# Stack three slices, the length of the total window.
-# example_window = tf.stack([np.array(train_df[:w2.total_window_size]),
-#                            np.array(train_df[100:100+w2.total_window_size]),
-#                            np.array(train_df[200:200+w2.total_window_size])])
+wg_plotter = WindowGenerator(input_width=24, 
+                     label_width=24, 
+                     shift=1,
+                     train_df=train_df,
+                     val_df=val_df,
+                     test_df=test_df,
+                     label_columns=['USD (AM)'])
 
-# example_inputs, example_labels = w2.split_window(example_window)
 
-# print('All shapes are: (batch, time, features)')
-# print(f'Window shape: {example_window.shape}')
-# print(f'Inputs shape: {example_inputs.shape}')
-# print(f'Labels shape: {example_labels.shape}')
+val_performance = {}
+performance = {}
 
-print(df.head())
+
+
+dense = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=64, activation='relu'),
+    tf.keras.layers.Dense(units=64, activation='relu'),
+    tf.keras.layers.Dense(units=1)
+])
+
+history = compile_and_fit(dense, wg_single_predictor)
+
+val_performance['Dense'] = dense.evaluate(wg_single_predictor.val)
+performance['Dense'] = dense.evaluate(wg_single_predictor.test, verbose=0)
+# print(wg_single_predictor)
+# wg_plotter.plot(model=linear, plot_col='USD (AM)')
