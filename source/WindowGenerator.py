@@ -80,11 +80,10 @@ class WindowGenerator():
                 plt.scatter(self.label_indices, predictions[n, :, label_col_index],
                         marker='X', edgecolors='k', label='Predictions',
                         c='#ff7f0e', s=64)
-
             if n == 0:
                 plt.legend()
-
         plt.xlabel('Time [h]')
+        plt.show()
 
     def make_dataset(self, data):
         data = np.array(data, dtype=np.float32)

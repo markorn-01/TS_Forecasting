@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing as pre
 
 def get_data(csv_path):
     #this path is used for testing only. Otherwise, use the path in the main function.
@@ -27,7 +28,6 @@ def add_time(df, date_time):
 
 def split_data(df):
     #split dataset into train, validation, and test (80%, 10%, 10%)
-    column_indices = {name: i for i, name in enumerate(df.columns)}
     n = len(df)
     train_df = df[0: int(n*0.8)]
     val_df = df[int(n*0.8): int(n*0.9)]
@@ -37,10 +37,21 @@ def split_data(df):
 
 def normalize_data(train_df, val_df, test_df):
     #normalize the data
-    train_mean = train_df.mean()
-    train_std = train_df.std()
-    train_df = (train_df - train_mean) / train_std
-    val_df = (val_df - train_mean) / train_std
-    test_df = (test_df - train_mean) / train_std
+    # train_mean = train_df.mean()
+    # train_std = train_df.std()
+    # train_df = (train_df - train_mean) / train_std
+    # val_df = (val_df - train_mean) / train_std
+    # test_df = (test_df - train_mean) / 
+    columns = train_df.columns
+    train_df = train_df.values
+    val_df = val_df.values
+    test_df = test_df.values
+    min_max_scaler = pre.MinMaxScaler()
+    train_scaled = min_max_scaler.fit_transform(train_df)
+    val_scaled = min_max_scaler.fit_transform(val_df)
+    test_scaled = min_max_scaler.fit_transform(test_df)
+    train_df = pd.DataFrame(train_scaled, columns=columns)
+    val_df = pd.DataFrame(val_scaled, columns=columns)
+    test_df = pd.DataFrame(test_scaled, columns=columns)
     return train_df, val_df, test_df
          
