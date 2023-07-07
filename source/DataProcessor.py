@@ -3,7 +3,6 @@ import pandas as pd
 
 def get_data(csv_path):
     #this path is used for testing only. Otherwise, use the path in the main function.
-    csv_path = "data/gold/LBMA-GOLD.csv"
     df = pd.read_csv(csv_path) 
     return df
 

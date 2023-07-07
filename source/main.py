@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import tensorflow as tf
-from data_process import *
+from DataProcessor import *
 from WindowGenerator import *
 from ModelGenerator import *
 
