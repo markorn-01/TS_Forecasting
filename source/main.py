@@ -1,6 +1,4 @@
 import datetime
-import IPython
-import IPython.display
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -19,6 +17,16 @@ train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
 #----------------------------------------------------------------
 #window generating
 
+CONV_WIDTH = 3
+conv_window = WindowGenerator(
+    input_width=CONV_WIDTH,
+    label_width=1,
+    train_df=train_df,
+    test_df=test_df,
+    val_df=val_df,
+    shift=1,
+    label_columns=['USD (AM)'])
+
 wide_window = WindowGenerator(
     input_width=24,
     label_width=24,
@@ -29,24 +37,41 @@ wide_window = WindowGenerator(
     label_columns=['USD (AM)']
 )
 
-# conv_width = 3
-# label_width = 24
-# input_width = label_width + conv_width - 1
+label_width = 24
+input_width = label_width + CONV_WIDTH - 1
 
-# wide_conv_window = WindowGenerator(
-#     input_width=input_width,
-#     label_width=label_width,
-#     train_df=train_df,
-#     test_df=test_df,
-#     val_df=val_df,
-#     shift=1,
-#     label_columns=['USD (AM)']
-# )
+wide_conv_window = WindowGenerator(
+    input_width=input_width,
+    label_width=label_width,
+    train_df=train_df,
+    test_df=test_df,
+    val_df=val_df,
+    shift=1,
+    label_columns=['USD (AM)']
+)
 
-val_peroformance = {}
+val_performance = {}
 performance = {}
+
 #----------------------------------------------------------------
 #model generating
+
+#--------------------------------CNN----------------------------
+cnn = tf.keras.Sequential([
+    tf.keras.layers.Conv1D(filters=32,
+                           kernel_size=(CONV_WIDTH,),
+                           activation='relu'),
+    tf.keras.layers.Dense(units=32, activation='relu'),
+    tf.keras.layers.Dense(units=1),
+])
+model = compile_and_fit(cnn, conv_window)
+model.save('models/cnn.keras')
+
+val_performance['Conv'] = cnn.evaluate(conv_window.val)
+performance['Conv'] = cnn.evaluate(conv_window.test, verbose=0)
+wide_conv_window.plot(cnn, plot_col='USD (AM)')
+
+#--------------------------------LSTM---------------------------
 lstm = tf.keras.models.Sequential([
     tf.keras.layers.LSTM(32, return_sequences=True),
     tf.keras.layers.Dense(units=1)
@@ -55,8 +80,19 @@ lstm = tf.keras.models.Sequential([
 model = compile_and_fit(lstm, wide_window)
 model.save('models/lstm.keras')
 
-val_peroformance['LSTM'] = lstm.evaluate(wide_window.val)
+val_performance['LSTM'] = lstm.evaluate(wide_window.val)
 performance['LSTM'] = lstm.evaluate(wide_window.test, verbose=0)
-
 wide_window.plot(lstm, plot_col='USD (AM)')
 
+#show result
+show_result(model=lstm, 
+            val_performance=val_performance, 
+            performance=performance, 
+            metric_name='mean_squared_error',
+            y_label='Loss [USD (AM), normalized]')
+
+show_result(model=lstm, 
+            val_performance=val_performance, 
+            performance=performance, 
+            metric_name='mean_absolute_error',
+            y_label='MAE [USD (AM), normalized]')

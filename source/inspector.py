@@ -1,6 +1,4 @@
 import datetime
-import IPython
-import IPython.display
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -11,8 +9,9 @@ from ModelGenerator import *
 
 
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
-df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
-df = add_time(df, datetime)
+# print(df.info())
+# df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
+# df = add_time(df, datetime)
 # plt.plot(df['Month sin'][:150], label='Month sin')
 # plt.plot(df['Month cos'][:150], label='Month cos')
 # plt.plot(df['Year sin'][:1000], label='Year sin')
@@ -20,21 +19,36 @@ df = add_time(df, datetime)
 # plt.legend()
 # plt.show()
 
-# plt.hist(df['USD (AM)'], bins=1500)
-# plt.xlabel('Price')
-# plt.ylabel('Count')
-# plt.title('Price Distribution (USD (AM))')
-# plt.show()
+plt.hist(df['USD (AM)'].iloc[:365])
+plt.xlabel('Price')
+plt.ylabel('Count')
+plt.title('Price Distribution (USD (AM))')
+plt.show()
 # df['EURO (AM)'] = df['EURO (AM)'].fillna(method='ffill')
-plt.plot(df['USD (AM)'][:180], label='USD (AM)')
-plt.plot(df['USD (PM)'][:180], label='USD (PM)')
+# plt.plot(df['USD (AM)'][:180], label='USD (AM)')
+# plt.plot(df['USD (PM)'][:180], label='USD (PM)')
 # # plt.plot(df['GBP (AM)'], label='GBP (AM)')
 # # plt.plot(df['EURO (AM)'], label='EURO (AM)')
-plt.legend()
-plt.show()
+# plt.legend()
+# plt.show()
 
 #----------------------------------------------------------------
 #                           DRAFT
+
+#--------------------------------Dense---------------------------
+# dense = tf.keras.Sequential([
+#     tf.keras.layers.Flatten(),
+#     tf.keras.layers.Dense(units=32, activation='relu'),
+#     tf.keras.layers.Dense(units=32, activation='relu'),
+#     tf.keras.layers.Dense(units=1),
+#     tf.keras.layers.Reshape([1, -1]),
+# ])
+# model = compile_and_fit(dense, conv_window)
+# model.save('models/dense.keras')
+
+# val_performance['Dense'] = dense.evaluate(conv_window.val)
+# performance['Dense'] = dense.evaluate(conv_window.test, verbose=0)
+# wide_conv_window.plot(dense, plot_col='USD (AM)')
 
 # wg_single_predictor = WindowGenerator(input_width=1, 
 #                      label_width=1, 

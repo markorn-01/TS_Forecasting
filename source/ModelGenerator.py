@@ -9,7 +9,8 @@ def compile_and_fit(model, window, patience=2):
 
     model.compile(loss=tf.keras.losses.MeanSquaredError(),
                   optimizer=tf.keras.optimizers.Adam(),
-                  metrics=[tf.keras.metrics.MeanAbsoluteError()])
+                  metrics=[tf.keras.metrics.MeanAbsoluteError(),
+                           tf.keras.metrics.MeanSquaredError()])
 
     model.fit(window.train, 
                         epochs=MAX_EPOCHS,

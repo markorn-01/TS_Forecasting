@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn import preprocessing as pre
 
 def get_data(csv_path):
@@ -62,4 +63,18 @@ def normalize_data(train_df, val_df, test_df, method='minmax'):
         val_df = (val_df - train_mean) / train_std
         test_df = (test_df - train_mean) / train_std
     return train_df, val_df, test_df
-         
+
+def show_result(model, val_performance, performance, metric_name, y_label):
+    x = np.arange(len(performance))
+    width = 0.3
+    metric_index = model.metrics_names.index(metric_name)
+    val = [v[metric_index] for v in val_performance.values()]
+    test = [v[metric_index] for v in performance.values()]
+    plt.ylabel(y_label)
+    plt.bar(x - 0.17, val, width, label='Validation')
+    plt.bar(x + 0.17, test, width, label='Test')
+    plt.xticks(ticks=x, 
+               labels=performance.keys(),
+               rotation=45)
+    plt.legend()
+    plt.show()
