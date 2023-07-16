@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn import preprocessing as pre
 
 def get_data(csv_path):
-    #this path is used for testing only. Otherwise, use the path in the main function.
+    #get data from a given csv path.
     df = pd.read_csv(csv_path) 
     return df
 
