@@ -1,14 +1,14 @@
-import datetime
-import numpy as np
-import pandas as pd
-import seaborn as sns
-import tensorflow as tf
-from DataProcessor import *
-from WindowGenerator import *
-from ModelGenerator import *
+# import datetime
+# import numpy as np
+# import pandas as pd
+# import seaborn as sns
+# import tensorflow as tf
+# from DataProcessor import *
+# from WindowGenerator import *
+# from ModelGenerator import *
 
 
-df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
+# df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
 # print(df.info())
 # df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
 # df = add_time(df, datetime)
@@ -19,11 +19,11 @@ df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
 # plt.legend()
 # plt.show()
 
-plt.hist(df['USD (AM)'].iloc[:365])
-plt.xlabel('Price')
-plt.ylabel('Count')
-plt.title('Price Distribution (USD (AM))')
-plt.show()
+# plt.hist(df['USD (AM)'].iloc[:365])
+# plt.xlabel('Price')
+# plt.ylabel('Count')
+# plt.title('Price Distribution (USD (AM))')
+# plt.show()
 # df['EURO (AM)'] = df['EURO (AM)'].fillna(method='ffill')
 # plt.plot(df['USD (AM)'][:180], label='USD (AM)')
 # plt.plot(df['USD (PM)'][:180], label='USD (PM)')
@@ -165,3 +165,40 @@ plt.show()
 #            rotation=45)
 # _ = plt.legend()
 # plt.show()
+
+import numpy as np
+import xgboost as xgb
+
+data = np.array([1,2,3,4,5,6,7,8,9,10])
+window_size = 3
+stride = 1
+
+windowed_data = []
+targets = []
+
+for i in range(len(data) - window_size):
+    windowed_data.append(data[i:i+window_size])
+    targets.append(data[i+window_size])
+    
+windpwed_data = np.array(windowed_data)
+targets = np.array(targets)
+
+train_size = int(0.8 * len(windowed_data))
+train_data, test_data = windowed_data[:train_size], windowed_data[train_size:]
+train_targets, test_targets = targets[:train_size], targets[train_size:]
+
+dtrain = xgb.DMatrix(train_data, label=train_targets)
+
+params = {
+    'max_depth': 3,
+    'objective': 'reg:squarederror',
+    'eta': 0.1,
+    'eval_metric': 'mae'
+}
+
+model = xgb.train(params, dtrain)
+
+dtest = xgb.DMatrix(test_data)
+predicitons = model.predict(dtest)
+rmse = np.sqrt(np.mean((predicitons - test_targets)**2))
+print('root mean squared error: ', rmse)
