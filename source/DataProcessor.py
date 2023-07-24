@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing as pre
 
 def get_data(csv_path):
-    #get data from a given csv path.
+    # get data from a given csv path.
     df = pd.read_csv(csv_path) 
     return df
 
 def prepare_data(df, label=None, features=[], date=None):
-    #set labels and features
+    # set labels and features
     date_time = pd.to_datetime(df.pop(date), format='%Y-%m-%d')
     df[df.isna()] = 0.00
     if features == None:
@@ -19,7 +19,7 @@ def prepare_data(df, label=None, features=[], date=None):
     return  df, date_time
 
 def add_time(df, date_time):
-    #add time features and set date_time as index
+    # add time features and set date_time as index
     timestamp_s = date_time.map(pd.Timestamp.timestamp)
     day = 24*60*60
     month = 30 * day
@@ -34,7 +34,7 @@ def add_time(df, date_time):
     return df
 
 def split_data(df):
-    #split dataset into train, validation, and test (80%, 10%, 10%)
+    # split dataset into train, validation, and test (80%, 10%, 10%)
     n = len(df)
     train_df = df[0: int(n*0.8)]
     val_df = df[int(n*0.8): int(n*0.9)]
@@ -43,7 +43,7 @@ def split_data(df):
     return train_df, val_df, test_df, num_features
 
 def normalize_data(train_df, val_df, test_df, method='minmax'):
-    #normalize the data
+    # normalize the data
     if method == 'minmax':
         columns = train_df.columns
         train_df = train_df.values

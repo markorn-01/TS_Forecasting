@@ -7,7 +7,7 @@ from DataProcessor import *
 from WindowGenerator import *
 from ModelGenerator import *
 
-#data preprocessing
+# data preprocessing
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
 df, datetime = prepare_data(df, label='USD (AM)', date='Date') 
 df = add_time(df, datetime)
@@ -15,7 +15,7 @@ train_df, val_df, test_df, num_features = split_data(df)
 train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
 
 #----------------------------------------------------------------
-#window generating
+# window generating
 
 CONV_WIDTH = 3
 conv_window = WindowGenerator(
@@ -54,7 +54,7 @@ val_performance = {}
 performance = {}
 
 #----------------------------------------------------------------
-#model generating
+# model generating
 
 #--------------------------------CNN----------------------------
 cnn = tf.keras.Sequential([
@@ -84,7 +84,7 @@ val_performance['LSTM'] = lstm.evaluate(wide_window.val)
 performance['LSTM'] = lstm.evaluate(wide_window.test, verbose=0)
 wide_window.plot(lstm, plot_col='USD (AM)')
 
-#show result
+# show result
 show_result(model=lstm, 
             val_performance=val_performance, 
             performance=performance, 

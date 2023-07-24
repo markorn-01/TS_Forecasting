@@ -1,2 +1,5 @@
-#Remove MacOS hidden files
+# Remove pycache
+__pycache__/
+# Remove MacOS hidden files
 *.DS_Store
+
