@@ -5,7 +5,7 @@ This repository is to store my materials with the purpose of time series forecas
 Please install [anaconda](https://www.anaconda.com/download#windows)
 
 ## Create Tensorflow environment
-'''conda create -n <tensorflow environment name> python=3.9'''
+```conda create -n <tensorflow environment name> python=3.9```
 
 ## Run 
-'''conda activate <tensorflow environment name>
+```conda activate <tensorflow environment name>```
