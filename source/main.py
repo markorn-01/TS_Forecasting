@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import tensorflow as tf
-from DataProcessor import *
-from WindowGenerator import *
-from ModelGenerator import *
+from data_process import *
+from window_generate import *
+from model_generate import *
 
 # data preprocessing
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
