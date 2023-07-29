@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import datetime
 from data_process import *
 
 @st.cache_data
@@ -39,7 +38,7 @@ def show_statistics():
     
 def show_data_page():
     st.title("Description of Gold Price Dataset")
-    st.write("This dataset contains the daily gold price from January, 1968 to June, 2023. The data is collected from [LBMA](https://www.lbma.org.uk/).")
+    st.write("This dataset contains the daily gold price from January, 1968 to June, 2023. It is collected from [LBMA](https://www.lbma.org.uk/).")
     show_by_date()
     show_statistics()
     
