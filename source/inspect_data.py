@@ -1,17 +1,18 @@
-# import datetime
-# import numpy as np
-# import pandas as pd
-# import seaborn as sns
+import datetime
+import numpy as np
+import pandas as pd
+import seaborn as sns
 # import tensorflow as tf
-# from DataProcessor import *
-# from WindowGenerator import *
-# from ModelGenerator import *
+from data_process import *
+# from window_generate import *
+# from model_generate import *
 
 
-# df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
+df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
 # print(df.info())
-# df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
-# df = add_time(df, datetime)
+df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
+df = add_time(df, datetime)
+print(len(df.groupby(pd.Grouper(freq='5Y')).mean()))
 # plt.plot(df['Month sin'][:150], label='Month sin')
 # plt.plot(df['Month cos'][:150], label='Month cos')
 # plt.plot(df['Year sin'][:1000], label='Year sin')
@@ -166,39 +167,39 @@
 # _ = plt.legend()
 # plt.show()
 
-import numpy as np
-import xgboost as xgb
+# import numpy as np
+# import xgboost as xgb
 
-data = np.array([1,2,3,4,5,6,7,8,9,10])
-window_size = 3
-stride = 1
+# data = np.array([1,2,3,4,5,6,7,8,9,10])
+# window_size = 3
+# stride = 1
 
-windowed_data = []
-targets = []
+# windowed_data = []
+# targets = []
 
-for i in range(len(data) - window_size):
-    windowed_data.append(data[i:i+window_size])
-    targets.append(data[i+window_size])
+# for i in range(len(data) - window_size):
+#     windowed_data.append(data[i:i+window_size])
+#     targets.append(data[i+window_size])
     
-windpwed_data = np.array(windowed_data)
-targets = np.array(targets)
+# windowed_data = np.array(windowed_data)
+# targets = np.array(targets)
 
-train_size = int(0.8 * len(windowed_data))
-train_data, test_data = windowed_data[:train_size], windowed_data[train_size:]
-train_targets, test_targets = targets[:train_size], targets[train_size:]
+# train_size = int(0.8 * len(windowed_data))
+# train_data, test_data = windowed_data[:train_size], windowed_data[train_size:]
+# train_targets, test_targets = targets[:train_size], targets[train_size:]
 
-dtrain = xgb.DMatrix(train_data, label=train_targets)
+# dtrain = xgb.DMatrix(train_data, label=train_targets)
 
-params = {
-    'max_depth': 3,
-    'objective': 'reg:squarederror',
-    'eta': 0.1,
-    'eval_metric': 'mae'
-}
+# params = {
+#     'max_depth': 3,
+#     'objective': 'reg:squarederror',
+#     'eta': 0.1,
+#     'eval_metric': 'mae'
+# }
 
-model = xgb.train(params, dtrain)
+# model = xgb.train(params, dtrain)
 
-dtest = xgb.DMatrix(test_data)
-predicitons = model.predict(dtest)
-rmse = np.sqrt(np.mean((predicitons - test_targets)**2))
-print('root mean squared error: ', rmse)
+# dtest = xgb.DMatrix(test_data)
+# predicitons = model.predict(dtest)
+# rmse = np.sqrt(np.mean((predicitons - test_targets)**2))
+# print('root mean squared error: ', rmse)
