@@ -18,18 +18,21 @@ def prepare_data(df, label=None, features=[], date=None):
     df = df[[label] + features]
     return  df, date_time
 
-def add_time(df, date_time):
-    # add time features and set date_time as index
+def create_time_features(date_time):
     timestamp_s = date_time.map(pd.Timestamp.timestamp)
     day = 24*60*60
     month = 30 * day
     year = (365.2425)*day
-    # df['Day sin'] = np.sin(timestamp_s * (2 * np.pi / day))
-    # df['Day cos'] = np.cos(timestamp_s * (2 * np.pi / day))
-    df['Month sin'] = np.sin(timestamp_s * (2 * np.pi / month))
-    df['Month cos'] = np.cos(timestamp_s * (2 * np.pi / month))
-    df['Year sin'] = np.sin(timestamp_s * (2 * np.pi / year))
-    df['Year cos'] = np.cos(timestamp_s * (2 * np.pi / year))
+    month_sin = np.sin(timestamp_s * (2 * np.pi / month))
+    month_cos = np.cos(timestamp_s * (2 * np.pi / month))
+    year_sin = np.sin(timestamp_s * (2 * np.pi / year))
+    year_cos = np.cos(timestamp_s * (2 * np.pi / year))
+    return month_sin, month_cos, year_sin, year_cos
+
+def add_time(df, date_time):
+    # add time features and set date_time as index
+    df['Month sin'], df['Month cos'], \
+    df['Year sin'], df['Year cos'] = create_time_features(date_time)
     df.set_index(date_time, inplace=True)
     return df
 
@@ -42,7 +45,8 @@ def split_data(df):
     num_features = df.shape[1]
     return train_df, val_df, test_df, num_features
 
-def normalize_data(train_df, val_df, test_df, method='minmax'):
+def normalize_data(train_df, val_df, test_df, 
+                   method='minmax'):
     # normalize the data
     if method == 'minmax':
         columns = train_df.columns
@@ -64,7 +68,8 @@ def normalize_data(train_df, val_df, test_df, method='minmax'):
         test_df = (test_df - train_mean) / train_std
     return train_df, val_df, test_df
 
-def show_result(model, val_performance, performance, metric_name, y_label):
+def show_result(model, val_performance, performance, 
+                metric_name, y_label):
     x = np.arange(len(performance))
     width = 0.3
     metric_index = model.metrics_names.index(metric_name)

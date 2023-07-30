@@ -13,6 +13,10 @@ def collect_data():
 
 df, label, features = collect_data()
 
+def show_script():
+    st.title("Description of Gold Price Dataset")
+    st.write("This dataset contains the daily gold price from January, 1968 to June, 2023. It is collected from [LBMA](https://www.lbma.org.uk/).")
+
 def show_by_date():
     first_date = pd.to_datetime('1968-01-02', format='%Y-%m-%d')
     last_date = pd.to_datetime('2023-06-30', format='%Y-%m-%d')
@@ -35,10 +39,9 @@ def show_statistics():
         ### Distribution of the gold price (USD) from 1968 to 2023
         """)
     st.bar_chart(df[[label, features]])
-    
+  
 def show_data_page():
-    st.title("Description of Gold Price Dataset")
-    st.write("This dataset contains the daily gold price from January, 1968 to June, 2023. It is collected from [LBMA](https://www.lbma.org.uk/).")
+    show_script()
     show_by_date()
     show_statistics()
     
