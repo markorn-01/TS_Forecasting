@@ -3,16 +3,39 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 # import tensorflow as tf
+from tensorflow.keras.models import load_model
 from data_process import *
-# from window_generate import *
-# from model_generate import *
+from window_generate import *
+from model_generate import *
 
 
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
-# print(df.info())
-df, datetime = prepare_data(df, label='USD (AM)', date='Date', features=['USD (PM)'])
+date = pd.to_datetime(df['Date'], format='%Y-%m-%d')
+df, datetime = prepare_data(df, label='USD (AM)', date='Date')
 df = add_time(df, datetime)
-print(len(df.groupby(pd.Grouper(freq='5Y')).mean()))
+print(df)
+train_df, val_df, test_df, num_features = split_data(df)
+train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
+wide_window = WindowGenerator(
+    input_width=24,
+    label_width=24,
+    train_df=train_df,
+    test_df=test_df,
+    val_df=val_df,
+    shift=1,
+    label_columns=['USD (AM)']
+)
+
+# model = load_model("models/lstm.keras")
+# print(wide_window.test)
+# predictions = model.predict(wide_window.test)
+# print(predictions)
+# train_df, val_df, test_df, num_features = split_data(df)
+# train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
+# model = load_model("models/cnn.keras")
+# model.predict(test_df)
+# print(len(df.groupby(pd.Grouper(freq='5Y')).mean()))
+
 # plt.plot(df['Month sin'][:150], label='Month sin')
 # plt.plot(df['Month cos'][:150], label='Month cos')
 # plt.plot(df['Year sin'][:1000], label='Year sin')
@@ -203,3 +226,4 @@ print(len(df.groupby(pd.Grouper(freq='5Y')).mean()))
 # predicitons = model.predict(dtest)
 # rmse = np.sqrt(np.mean((predicitons - test_targets)**2))
 # print('root mean squared error: ', rmse)
+    
