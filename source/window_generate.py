@@ -5,14 +5,8 @@ import tensorflow as tf
 
 
 class WindowGenerator():
-    def __init__(self, 
-                input_width, 
-                label_width, 
-                shift,
-                train_df, 
-                val_df, 
-                test_df,
-                label_columns=None):
+    def __init__(self, input_width, label_width, shift,
+                train_df, val_df, test_df, label_columns=None):
         # Store the raw data.
         self.train_df = train_df
         self.val_df = val_df
@@ -51,6 +45,15 @@ class WindowGenerator():
         labels.set_shape([None, self.label_width, None])
         return inputs, labels
 
+    def plot_inputs(self, inputs):
+        plt.plot(self.input_indices, inputs, label='Inputs', marker='.', zorder=-10)
+
+    def plot_labels(self, labels):
+        plt.scatter(self.label_indices, labels, edgecolors='k', label='Labels', c='#2ca02c', s=64)
+
+    def plot_predictions(self, predictions):
+        plt.scatter(self.label_indices, predictions, marker='X', edgecolors='k', label='Predictions', c='#ff7f0e', s=64)
+
     def plot(self, model=None, plot_col=None, max_subplots=3):
         inputs, labels = self.example
         plt.figure(figsize=(12, 8))
@@ -59,28 +62,22 @@ class WindowGenerator():
         for n in range(max_n):
             plt.subplot(max_n, 1, n+1)
             plt.ylabel(f'{plot_col} [normed]')
-            plt.plot(self.input_indices, inputs[n, :, plot_col_index],
-                    label='Inputs', marker='.', zorder=-10)
-
+            self.plot_inputs(inputs[n, :, plot_col_index])
             if self.label_columns:
                 label_col_index = self.label_columns_indices.get(plot_col, None)
             else:
                 label_col_index = plot_col_index
-
             if label_col_index is None:
                 continue
-
-            plt.scatter(self.label_indices, labels[n, :, label_col_index],
-                        edgecolors='k', label='Labels', c='#2ca02c', s=64)
+            self.plot_labels(labels[n, :, label_col_index])
             if model is not None:
                 predictions = model(inputs)
-                plt.scatter(self.label_indices, predictions[n, :, label_col_index],
-                        marker='X', edgecolors='k', label='Predictions',
-                        c='#ff7f0e', s=64)
+                self.plot_predictions(predictions[n, :, label_col_index])
             if n == 0:
                 plt.legend()
-        plt.xlabel('Time [h]')
+        plt.xlabel('Time (day)')
         plt.show()
+
 
     def make_dataset(self, data):
         data = np.array(data, dtype=np.float32)
@@ -109,17 +106,8 @@ class WindowGenerator():
     @property
     def example(self):
         """Get and cache an example batch of `inputs, labels` for plotting."""
-        result = getattr(self, '_example', None)
-        if result is None:
+        if not getattr(self, '_example', None):
             # No example batch was found, so get one from the `.train` dataset
-            result = next(iter(self.train))
             # And cache it for next time
-            self._example = result
-        return result
-
-    def __repr__(self):
-        return '\n'.join([
-            f'Total window size: {self.total_window_size}',
-            f'Input indices: {self.input_indices}',
-            f'Label indices: {self.label_indices}',
-            f'Label column name(s): {self.label_columns}'])
+            self._example = next(iter(self.train))
+        return self._example
