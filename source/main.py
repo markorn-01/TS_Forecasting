@@ -6,16 +6,14 @@ import tensorflow as tf
 from data_process import *
 from window_generate import *
 from model_generate import *
-from models.transformers import Transformer
-from models.SOTA import SOTA
-from models.ODE import ODE
+from models.Transformer import Transformer
+from models.CNN import CNN
 # data preprocessing
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
 df, datetime = prepare_data(df, label='USD (AM)', date='Date') 
 df = add_time(df, datetime)
 train_df, val_df, test_df, num_features = split_data(df)
 train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
-print(train_df.head())
 #----------------------------------------------------------------
 # window generating
 
@@ -68,10 +66,11 @@ performance = {}
 #----------------------------------------------------------------
 # model generating
 
-transformer = Transformer(window=ex_window)
-print(transformer)
-model = compile_and_fit(transformer.model, ex_window)
-eval_performance = transformer.model.evaluate(ex_window.test, verbose=0)
+transformer = CNN(window=wide_window)
+model = compile_and_fit(transformer.model, wide_window)
+model.save('trained_models/cnn.keras')
+eval_performance = transformer.model.evaluate(wide_window.test, verbose=0)
+wide_conv_window.plot(transformer.model, plot_col='USD (AM)')
 #--------------------------------CNN----------------------------
 # cnn = tf.keras.Sequential([
 #     tf.keras.layers.Conv1D(filters=32,
