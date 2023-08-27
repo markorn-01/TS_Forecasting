@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from data_process import *
+from utils.data_process import *
 
 @st.cache_data
 def collect_data():

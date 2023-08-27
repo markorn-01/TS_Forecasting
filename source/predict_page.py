@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from tensorflow.keras.models import load_model
-from data_process import create_time_features
+from utils.data_process import create_time_features
 
 def set_up_page():
     st.title("Prediction of Gold Price by Deep Learning Models")
     st.write("This page is under construction.")
     
 def get_options():
-    model = st.sidebar.selectbox("Select a model", ["LSTM", "CNN"])
+    model = st.sidebar.selectbox("Select a model", ["CNN", "LSTM", "Transformer"])
     start_date = pd.to_datetime('2023-07-01', format='%Y-%m-%d')
     end_date = start_date + pd.DateOffset(years= 5)
     predict_date = st.date_input('Predict date', \
@@ -19,7 +19,7 @@ def get_options():
     return model, predict_date
 
 def make_prediction(model, predict_date):
-    model = load_model(f"models/{str(model).lower()}.keras")
+    # model = load_model(f"models/{str(model).lower()}.keras")
     # timestamp_s = pd.to_datetime(predict_date, format='%Y-%m-%d')
     # st.write(type(timestamp_s))
     # day = 24*60*60
@@ -32,8 +32,9 @@ def make_prediction(model, predict_date):
     # month_sin, month_cos, year_sin, year_cos = create_time_features(predict_date_series)
     # df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
     
-    st.write(model.predict())
-      
+    # st.write(model.predict())
+    pass
+
 def show_predict_page():
     set_up_page()
     model, predict_date = get_options()

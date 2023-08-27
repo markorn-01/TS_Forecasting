@@ -3,10 +3,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import tensorflow as tf
-from data_process import *
-from window_generate import *
-from model_generate import *
-from models.Transformer import Transformer
+from utils.data_process import *
+from utils.window_generate import *
+from utils.model_generate import *
+from models.Transformer import Transformer#, Transformer1
 from models.CNN import CNN
 # data preprocessing
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
@@ -66,21 +66,28 @@ performance = {}
 #----------------------------------------------------------------
 # model generating
 
-transformer = CNN(window=wide_window)
-model = compile_and_fit(transformer.model, wide_window)
-model.save('trained_models/cnn.keras')
-eval_performance = transformer.model.evaluate(wide_window.test, verbose=0)
-wide_conv_window.plot(transformer.model, plot_col='USD (AM)')
+# transformer = Transformer1(window=ex_window)
+# model = compile_and_fit(transformer.model, ex_window)
+# model.save('trained_models/transformer.keras')
+# eval_performance = transformer.model.evaluate(ex_window.test, verbose=0)
+# wide_conv_window.plot(transformer.model, plot_col='USD (AM)')
+
+transformer = Transformer(window=ex_window)
+model = compile_and_fit(transformer, ex_window)
+model.save('models/transformer.keras')
+eval_performance = transformer.evaluate(ex_window.test, verbose=0)
+wide_conv_window.plot(transformer, plot_col='USD (AM)')
 #--------------------------------CNN----------------------------
 # cnn = tf.keras.Sequential([
 #     tf.keras.layers.Conv1D(filters=32,
 #                            kernel_size=(CONV_WIDTH,),
 #                            activation='relu'),
-    # tf.keras.layers.Dense(units=32, activation='relu'),
-    # tf.keras.layers.Dense(units=1),
+#     tf.keras.layers.Dense(units=32, activation='relu'),
+#     tf.keras.layers.Dense(units=1),
 # ])
+# cnn = CNN(conv_width=CONV_WIDTH)
 # model = compile_and_fit(cnn, conv_window)
-# model.save('models/cnn.keras')
+# model.save('models/cnn', save_format='tf')
 
 # val_performance['Conv'] = cnn.evaluate(conv_window.val)
 # performance['Conv'] = cnn.evaluate(conv_window.test, verbose=0)
