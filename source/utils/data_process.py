@@ -10,7 +10,7 @@ def get_data(csv_path):
 
 def prepare_data(df, label=None, features=[], date=None):
     # set labels and features
-    date_time = pd.to_datetime(df.pop(date), format='%Y-%m-%d')
+    date_time = pd.to_datetime(df.pop(date))
     df[df.isna()] = 0.00
     if features == None:
         return df[[label]] , date_time
@@ -18,21 +18,39 @@ def prepare_data(df, label=None, features=[], date=None):
     df = df[[label] + features]
     return  df, date_time
 
+# def create_time_features(date_time):
+#     timestamp_s = date_time.map(pd.Timestamp.timestamp)
+#     day = 24*60*60
+#     month = 30 * day
+#     year = (365.2425)*day
+#     day_sin = np.sin(timestamp_s * (2 * np.pi / day))
+#     day_cos = np.cos(timestamp_s * (2 * np.pi / day))
+#     month_sin = np.sin(timestamp_s * (2 * np.pi / month))
+#     month_cos = np.cos(timestamp_s * (2 * np.pi / month))
+#     # year_sin = np.sin(timestamp_s * (2 * np.pi / year))
+#     # year_cos = np.cos(timestamp_s * (2 * np.pi / year))
+#     return day_sin, day_cos, month_sin, month_cos #, year_sin, year_cos
+
 def create_time_features(date_time):
     timestamp_s = date_time.map(pd.Timestamp.timestamp)
-    day = 24*60*60
-    month = 30 * day
-    year = (365.2425)*day
-    month_sin = np.sin(timestamp_s * (2 * np.pi / month))
-    month_cos = np.cos(timestamp_s * (2 * np.pi / month))
-    year_sin = np.sin(timestamp_s * (2 * np.pi / year))
-    year_cos = np.cos(timestamp_s * (2 * np.pi / year))
-    return month_sin, month_cos, year_sin, year_cos
+    min_timestamp = timestamp_s.min()
+    max_timestamp = timestamp_s.max()
+    normalized_timestamp = (timestamp_s - min_timestamp) / (max_timestamp - min_timestamp)
+    day = 1.0
+    month = 12.0
+    day_sin = np.sin(normalized_timestamp * (2 * np.pi / day))
+    day_cos = np.cos(normalized_timestamp * (2 * np.pi / day))
+    month_sin = np.sin(normalized_timestamp * (2 * np.pi / month))
+    month_cos = np.cos(normalized_timestamp * (2 * np.pi / month))
+    
+    return day_sin, day_cos, month_sin, month_cos
 
 def add_time(df, date_time):
     # add time features and set date_time as index
-    df['Month sin'], df['Month cos'], \
-    df['Year sin'], df['Year cos'] = create_time_features(date_time)
+    # df['Month sin'], df['Month cos'], \
+    # df['Year sin'], df['Year cos'] = create_time_features(date_time)
+    df['Day sin'], df['Day cos'], \
+    df['Month sin'], df['Month cos'] = create_time_features(date_time)
     df.set_index(date_time, inplace=True)
     return df
 

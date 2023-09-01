@@ -71,6 +71,7 @@ class WindowGenerator():
                 continue
             self.plot_labels(labels[n, :, label_col_index])
             if model is not None:
+                print(inputs)
                 predictions = model(inputs)
                 self.plot_predictions(predictions[n, :, label_col_index])
             if n == 0:

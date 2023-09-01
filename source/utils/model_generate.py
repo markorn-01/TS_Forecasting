@@ -7,7 +7,7 @@ def compile_and_fit(model, window, patience=2):
                                                       patience=patience,
                                                       mode='min')
 
-    model.compile(loss=tf.keras.losses.MeanSquaredError(),
+    model.compile(loss=tf.keras.losses.MeanAbsoluteError(),
                   optimizer=tf.keras.optimizers.legacy.Adam(),
                   metrics=[tf.keras.metrics.MeanAbsoluteError(),
                            tf.keras.metrics.MeanSquaredError()])

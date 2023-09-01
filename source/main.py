@@ -29,8 +29,8 @@ conv_window = WindowGenerator(
     label_columns=['USD (AM)'])
 
 wide_window = WindowGenerator(
-    input_width=24,
-    label_width=24,
+    input_width=12,
+    label_width=12,
     train_df=train_df,
     test_df=test_df,
     val_df=val_df,
@@ -66,12 +66,12 @@ performance = {}
 
 #----------------------------------------------------------------
 # model generating
-
-transformer = Transformer(window=wide_window, num_heads=4, num_transformer_layers=5)
+transformer = Transformer(window=wide_window, num_heads=5, num_transformer_layers=2)
 model = compile_and_fit(transformer, wide_window)
 model.save('train/models/transformer', save_format='tf')
-eval_performance = transformer.evaluate(wide_window.test, verbose=0)
-wide_window.plot(transformer, plot_col='USD (AM)')
+performance['Transformer'] = transformer.evaluate(wide_window.test, verbose=0)
+wide_window.plot(transformer, plot_col='USD (AM)', max_subplots=1)
+# print(model.metrics_names)
 #--------------------------------CNN----------------------------
 
 # cnn = CNN(conv_width=CONV_WIDTH)
@@ -89,6 +89,7 @@ wide_window.plot(transformer, plot_col='USD (AM)')
 
 # val_performance['LSTM'] = lstm.evaluate(wide_window.val)
 # performance['LSTM'] = lstm.evaluate(wide_window.test, verbose=0)
+# print(performance)
 # wide_window.plot(lstm, plot_col='USD (AM)')
 
 # # show result

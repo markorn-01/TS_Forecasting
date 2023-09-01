@@ -4,13 +4,13 @@ import pandas as pd
 import seaborn as sns
 # import tensorflow as tf
 from tensorflow.keras.models import load_model
-from data_process import *
-from window_generate import *
-from model_generate import *
+from utils.data_process import *
+from utils.window_generate import *
+from utils.model_generate import *
 
 
 df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
-date = pd.to_datetime(df['Date'], format='%Y-%m-%d')
+date = pd.to_datetime(df['Date'])
 df, datetime = prepare_data(df, label='USD (AM)', date='Date')
 df = add_time(df, datetime)
 print(df)
