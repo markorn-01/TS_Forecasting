@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import datetime
 import numpy as np
 import pandas as pd
@@ -9,22 +10,81 @@ from utils.window_generate import *
 from utils.model_generate import *
 
 
-df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
-date = pd.to_datetime(df['Date'])
-df, datetime = prepare_data(df, label='USD (AM)', date='Date')
-df = add_time(df, datetime)
-print(df)
-train_df, val_df, test_df, num_features = split_data(df)
-train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
-wide_window = WindowGenerator(
-    input_width=24,
-    label_width=24,
-    train_df=train_df,
-    test_df=test_df,
-    val_df=val_df,
-    shift=1,
-    label_columns=['USD (AM)']
-)
+# Load the Jena Climate dataset
+dataset_url = "data/jena_climate/jena_climate_2009_2016.csv"
+df = pd.read_csv(dataset_url)
+df = df[-1000:]
+df['Date Time'] = pd.to_datetime(df['Date Time'])
+df.set_index('Date Time', inplace=True)
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+# Decompose the time series
+result = seasonal_decompose(df['T (degC)'], model='additive', period=365)
+trend = result.trend
+seasonal = result.seasonal
+residual = result.resid
+
+# Create a 4-subplot figure
+fig, axs = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+
+# Plot the original time series
+axs[0].plot(df.index, df['T (degC)'], label='Original', color='black')
+axs[0].set_title('Original Time Series')
+
+# Plot Trend
+axs[1].plot(trend, label='Trend', color='blue')
+axs[1].set_title('Trend')
+
+# Plot Seasonal
+axs[2].plot(seasonal, label='Seasonal', color='green')
+axs[2].set_title('Seasonal')
+
+# Plot Residual
+axs[3].plot(residual, label='Residual', color='red')
+axs[3].set_title('Residual')
+
+# Add a common x-axis label
+plt.xlabel('Date')
+
+# Adjust subplot layout
+plt.tight_layout()
+
+# Show the plot
+plt.show()
+
+
+# # Assuming your time series data is in 'y' (e.g., df['T (degC)'])
+# y = df['T (degC)']
+
+# # Perform FFT
+# fft_result = np.fft.fft(y)
+# frequencies = np.fft.fftfreq(len(fft_result))
+
+# # Plot the power spectrum to identify significant frequencies
+# plt.figure(figsize=(12, 6))
+# plt.plot(frequencies, np.abs(fft_result))
+# plt.title("FFT Power Spectrum")
+# plt.xlabel("Frequency")
+# plt.ylabel("Amplitude")
+# plt.grid(True)
+# plt.show()
+
+# df = get_data(csv_path="data/gold/LBMA-GOLD.csv")
+# date = pd.to_datetime(df['Date'])
+# df, datetime = prepare_data(df, label='USD (AM)', date='Date')
+# df = add_time(df, datetime)
+# print(df)
+# train_df, val_df, test_df, num_features = split_data(df)
+# train_df, val_df, test_df = normalize_data(train_df, val_df, test_df)
+# wide_window = WindowGenerator(
+#     input_width=24,
+#     label_width=24,
+#     train_df=train_df,
+#     test_df=test_df,
+#     val_df=val_df,
+#     shift=1,
+#     label_columns=['USD (AM)']
+# )
 
 # model = load_model("models/lstm.keras")
 # print(wide_window.test)

@@ -38,7 +38,7 @@ class Transformer(Model):
         attn_layer = self.attn_layer(inputs, inputs)
         attn_layer = self.dropout1(attn_layer)
         attn_out = self.layernorm1(inputs + attn_layer)
-        attn_out = inputs + attn_layer
+        # attn_out = inputs + attn_layer
         ff_layer = attn_out
         for conv_layer in self.conv_layers:
             ff_layer = conv_layer(ff_layer)

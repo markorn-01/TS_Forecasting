@@ -7,7 +7,7 @@ class CNN(Model):
         self.conv_layer = Conv1D(filters=32,
                                     kernel_size=(conv_width,),
                                     activation='relu')
-        # self.max_pooling_layer = tf.keras.layers.MaxPooling1D(pool_size=2)
+        self.max_pooling_layer = tf.keras.layers.MaxPooling1D(pool_size=2)
         self.dense_layer1 = Dense(units=32, activation='relu')
         self.dense_layer2 = Dense(units=1)
         

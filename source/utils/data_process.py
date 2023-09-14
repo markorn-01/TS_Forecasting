@@ -29,6 +29,7 @@ def prepare_data(df, label=None, features=[], date=None):
 #     month_cos = np.cos(timestamp_s * (2 * np.pi / month))
 #     # year_sin = np.sin(timestamp_s * (2 * np.pi / year))
 #     # year_cos = np.cos(timestamp_s * (2 * np.pi / year))
+#     print(day_sin, day_cos, month_sin, month_cos)
 #     return day_sin, day_cos, month_sin, month_cos #, year_sin, year_cos
 
 def create_time_features(date_time):
@@ -42,7 +43,7 @@ def create_time_features(date_time):
     day_cos = np.cos(normalized_timestamp * (2 * np.pi / day))
     month_sin = np.sin(normalized_timestamp * (2 * np.pi / month))
     month_cos = np.cos(normalized_timestamp * (2 * np.pi / month))
-    
+    # print(day_sin, day_cos, month_sin, month_cos)
     return day_sin, day_cos, month_sin, month_cos
 
 def add_time(df, date_time):
@@ -73,8 +74,8 @@ def normalize_data(train_df, val_df, test_df,
         test_df = test_df.values
         min_max_scaler = pre.MinMaxScaler()
         train_scaled = min_max_scaler.fit_transform(train_df)
-        val_scaled = min_max_scaler.fit_transform(val_df)
-        test_scaled = min_max_scaler.fit_transform(test_df)
+        val_scaled = min_max_scaler.transform(val_df)
+        test_scaled = min_max_scaler.transform(test_df)
         train_df = pd.DataFrame(train_scaled, columns=columns)
         val_df = pd.DataFrame(val_scaled, columns=columns)
         test_df = pd.DataFrame(test_scaled, columns=columns)

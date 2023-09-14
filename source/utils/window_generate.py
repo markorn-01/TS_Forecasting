@@ -6,7 +6,7 @@ import tensorflow as tf
 
 class WindowGenerator():
     def __init__(self, input_width, label_width, shift,
-                train_df, val_df, test_df, label_columns=None):
+                train_df, val_df, test_df, label_columns):
         # Store the raw data.
         self.train_df = train_df
         self.val_df = val_df
@@ -14,9 +14,7 @@ class WindowGenerator():
 
         # Work out the label column indices.
         self.label_columns = label_columns
-        if label_columns is not None:
-            self.label_columns_indices = {name: i for i, name in
-                                          enumerate(label_columns)}
+        self.label_columns_indices = {name: i for i, name in enumerate(label_columns)}
         self.column_indices = {name: i for i, name in
                             enumerate(train_df.columns)}
 
@@ -39,7 +37,8 @@ class WindowGenerator():
         labels = features[:, self.labels_slice, :]
         if self.label_columns is not None:
             labels = tf.stack(
-                [labels[:, :, self.column_indices[name]] for name in self.label_columns],
+                [labels[:, :, self.column_indices[name]] \
+                    for name in self.label_columns],
                 axis=-1)
         inputs.set_shape([None, self.input_width, None])
         labels.set_shape([None, self.label_width, None])
