@@ -1,56 +1,189 @@
-import matplotlib.pyplot as plt
-import datetime
-import numpy as np
 import pandas as pd
-import seaborn as sns
-# import tensorflow as tf
-from tensorflow.keras.models import load_model
-from utils.data_process import *
-from utils.window_generate import *
-from utils.model_generate import *
+import matplotlib.pyplot as plt
+
+data = pd.read_csv("data/jena_climate/jena_climate_2009_2016.csv")
+
+# Assuming the CSV file has a "Date" column with date information and a "USD (AM)" column with the USD prices.
+# We'll convert the "Date" column to a datetime type for plotting.
+data['Date'] = pd.to_datetime(data['Date Time'])
+
+# Filter the data for the desired date range (2015 to 2023)
+start_date = '2009-01-01'
+end_date = '2009-11-10'
+filtered_data = data[(data['Date'] >= start_date) & (data['Date'] < end_date)]
+filtered_data = filtered_data[["Date Time",  "p (mbar)",  "T (degC)",  "Tpot (K)"]]
+print(filtered_data)
+# Create the plot
+
+# Reload the data
+# data = pd.DataFrame({
+#     'Dataset': ['LBMA', None, None, None, None, 'Jena', None, None, None, None],
+#     'Model': ['CNN', 'LSTM', 'Residual LSTM', 'LSTM - CNN', 'Transformer - CNN',
+#               'CNN', 'LSTM', 'Residual LSTM', 'LSTM - CNN', 'Transformer - CNN'],
+#     'Loss': [0.000166, 0.000567, 0.00022, 0.000109, 0.02184, 
+#              0.000028, 0.000013, 0.000013, 0.000013, 0.000435],
+#     'MAE': [0.010265, 0.017746, 0.011367, 0.008101, 0.133461, 
+#             0.004075, 0.002345, 0.002485, 0.002465, 0.015121],
+#     'RMSE': [0.012876, 0.023813, 0.014849, 0.010424, 0.147784, 
+#              0.0053, 0.003542, 0.00366, 0.003631, 0.020868],
+#     'MAPE': [1.073646, 1.836101, 1.177629, 0.85034, 13.59844, 
+#              0.709105, 0.398333, 0.425988, 0.419826, 3.172732]
+# })
+
+# # Fill the Dataset column
+# data['Dataset'] = data['Dataset'].fillna(method='ffill')
+
+# # Metrics and titles for plotting
+# metrics = ['Loss', 'MAE', 'RMSE', 'MAPE']
+# titles = ['Loss', 'Mean Absolute Error (MAE)', 'Root Mean Squared Error (RMSE)', 'Mean Absolute Percentage Error (MAPE)']
+
+# # Plot and save the visualized metrics
+# fig, axs = plt.subplots(2, 2, figsize=(15, 12))
+
+# for ax, metric, title in zip(axs.ravel(), metrics, titles):
+#     data.pivot(index='Model', columns='Dataset', values=metric).plot(kind='bar', ax=ax)
+#     ax.set_title(title + ' by Dataset')
+#     ax.set_ylabel(metric)
+#     ax.set_xlabel('Model')
+#     ax.grid(axis='y', linestyle='--', alpha=0.7)
+#     ax.set_xticklabels(data['Model'].unique(), rotation=45, ha='right')
+
+# plt.tight_layout()
+# plt.savefig(file_path)
+# plt.close()
+# import matplotlib.pyplot as plt
+# import datetime
+# import numpy as np
+# import pandas as pd
+# import seaborn as sns
+# # import tensorflow as tf
+# from tensorflow.keras.models import load_model
+# from utils.data_process import *
+# from utils.window_generate import *
+# from utils.model_generate import *
 
 
-# Load the Jena Climate dataset
-dataset_url = "data/jena_climate/jena_climate_2009_2016.csv"
-df = pd.read_csv(dataset_url)
-df = df[-1000:]
-df['Date Time'] = pd.to_datetime(df['Date Time'])
-df.set_index('Date Time', inplace=True)
-from statsmodels.tsa.seasonal import seasonal_decompose
+# # Load the Jena Climate dataset
+# dataset_url = "data/jena_climate/jena_climate_2009_2016.csv"
+# data = pd.read_csv(dataset_url)
+# print(data.describe().transpose())
+# plt.figure(figsize=(15, 10))
 
-# Decompose the time series
-result = seasonal_decompose(df['T (degC)'], model='additive', period=365)
-trend = result.trend
-seasonal = result.seasonal
-residual = result.resid
+# # Histogram for USD
+# plt.subplot(3, 2, 1)
+# plt.hist(data['USD (AM)'].dropna(), bins=50, color='blue', alpha=0.7)
+# plt.title('Distribution of Gold Prices in USD (AM)')
+# plt.xlabel('Price in USD')
+# plt.ylabel('Frequency')
 
-# Create a 4-subplot figure
-fig, axs = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+# plt.subplot(3, 2, 2)
+# plt.hist(data['USD (PM)'].dropna(), bins=50, color='red', alpha=0.7)
+# plt.title('Distribution of Gold Prices in USD (PM)')
+# plt.xlabel('Price in USD')
+# plt.ylabel('Frequency')
 
-# Plot the original time series
-axs[0].plot(df.index, df['T (degC)'], label='Original', color='black')
-axs[0].set_title('Original Time Series')
+# # Histogram for GBP
+# plt.subplot(3, 2, 3)
+# plt.hist(data['GBP (AM)'].dropna(), bins=50, color='blue', alpha=0.7)
+# plt.title('Distribution of Gold Prices in GBP (AM)')
+# plt.xlabel('Price in GBP')
+# plt.ylabel('Frequency')
 
-# Plot Trend
-axs[1].plot(trend, label='Trend', color='blue')
-axs[1].set_title('Trend')
+# plt.subplot(3, 2, 4)
+# plt.hist(data['GBP (PM)'].dropna(), bins=50, color='red', alpha=0.7)
+# plt.title('Distribution of Gold Prices in GBP (PM)')
+# plt.xlabel('Price in GBP')
+# plt.ylabel('Frequency')
 
-# Plot Seasonal
-axs[2].plot(seasonal, label='Seasonal', color='green')
-axs[2].set_title('Seasonal')
+# # Histogram for EURO
+# plt.subplot(3, 2, 5)
+# plt.hist(data['EURO (AM)'].dropna(), bins=50, color='blue', alpha=0.7)
+# plt.title('Distribution of Gold Prices in EURO (AM)')
+# plt.xlabel('Price in EURO')
+# plt.ylabel('Frequency')
 
-# Plot Residual
-axs[3].plot(residual, label='Residual', color='red')
-axs[3].set_title('Residual')
+# plt.subplot(3, 2, 6)
+# plt.hist(data['EURO (PM)'].dropna(), bins=50, color='red', alpha=0.7)
+# plt.title('Distribution of Gold Prices in EURO (PM)')
+# plt.xlabel('Price in EURO')
+# plt.ylabel('Frequency')
 
-# Add a common x-axis label
-plt.xlabel('Date')
+# # Adjust layout for better visualization
+# plt.tight_layout()
+# plt.show()
+# data['Date'] = pd.to_datetime(data['Date'])
 
-# Adjust subplot layout
-plt.tight_layout()
+# # Plotting the trend of gold prices over time for each currency
+# plt.figure(figsize=(15, 10))
 
-# Show the plot
-plt.show()
+# # USD
+# plt.subplot(3, 1, 1)
+# plt.plot(data['Date'], data['USD (AM)'], label='USD (AM)', color='blue', alpha=0.7)
+# plt.plot(data['Date'], data['USD (PM)'], label='USD (PM)', color='red', alpha=0.7)
+# plt.title('Gold Price Trend in USD Over Time')
+# plt.legend()
+# plt.ylabel('Price in USD')
+# plt.xlabel('Date')
+
+# # GBP
+# plt.subplot(3, 1, 2)
+# plt.plot(data['Date'], data['GBP (AM)'], label='GBP (AM)', color='blue', alpha=0.7)
+# plt.plot(data['Date'], data['GBP (PM)'], label='GBP (PM)', color='red', alpha=0.7)
+# plt.title('Gold Price Trend in GBP Over Time')
+# plt.legend()
+# plt.ylabel('Price in GBP')
+# plt.xlabel('Date')
+
+# # EURO
+# plt.subplot(3, 1, 3)
+# plt.plot(data['Date'], data['EURO (AM)'], label='EURO (AM)', color='blue', alpha=0.7)
+# plt.plot(data['Date'], data['EURO (PM)'], label='EURO (PM)', color='red', alpha=0.7)
+# plt.title('Gold Price Trend in EURO Over Time')
+# plt.legend()
+# plt.ylabel('Price in EURO')
+# plt.xlabel('Date')
+
+# # Adjust layout for better visualization
+# plt.tight_layout()
+# plt.show()
+# df = df[-1000:]
+# df['Date Time'] = pd.to_datetime(df['Date Time'])
+# df.set_index('Date Time', inplace=True)
+# from statsmodels.tsa.seasonal import seasonal_decompose
+
+# # Decompose the time series
+# result = seasonal_decompose(df['T (degC)'], model='additive', period=365)
+# trend = result.trend
+# seasonal = result.seasonal
+# residual = result.resid
+
+# # Create a 4-subplot figure
+# fig, axs = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+
+# # Plot the original time series
+# axs[0].plot(df.index, df['T (degC)'], label='Original', color='black')
+# axs[0].set_title('Original Time Series')
+
+# # Plot Trend
+# axs[1].plot(trend, label='Trend', color='blue')
+# axs[1].set_title('Trend')
+
+# # Plot Seasonal
+# axs[2].plot(seasonal, label='Seasonal', color='green')
+# axs[2].set_title('Seasonal')
+
+# # Plot Residual
+# axs[3].plot(residual, label='Residual', color='red')
+# axs[3].set_title('Residual')
+
+# # Add a common x-axis label
+# plt.xlabel('Date')
+
+# # Adjust subplot layout
+# plt.tight_layout()
+
+# # Show the plot
+# plt.show()
 
 
 # # Assuming your time series data is in 'y' (e.g., df['T (degC)'])
